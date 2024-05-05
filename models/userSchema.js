@@ -23,8 +23,18 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
     },
+    verify: {
+        type: Boolean,
+        default: false,
+    },
+    verificationToken: {
+        type: String,
+        default: 1,
+        required: [true, 'Verify token is required'],
+    },
     avatarURL: String,
 })
+
 
 userSchema.methods.setPassword = function (password) {
     this.password = bCrypt.hashSync(password, bCrypt.genSaltSync(6));

@@ -7,6 +7,7 @@ import { current } from "#controllers/controllerCurrent.js"
 import { validateSchema } from "#validation/joi.js"
 import { updateAvatar } from "#controllers/controllerUpdateAvatar.js"
 import { uploadMiddleware } from "#middleware/uploadMiddleware.js"
+import { verifyToken } from "#controllers/controllerVerifyToken.js"
 
 const router = express.Router()
 
@@ -14,6 +15,7 @@ router.post('/signup', validateSchema, signUp)
 router.post('/login', validateSchema, login)
 router.get('/logout', authMiddleware, logout)
 router.get('/current', authMiddleware, current)
+router.get('./verify/:verificationToken', verifyToken)
 router.patch('/avatars', authMiddleware, uploadMiddleware.single("avatar"), updateAvatar)
 
 export default router
