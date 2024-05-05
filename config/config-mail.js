@@ -1,13 +1,23 @@
+import ejs from 'ejs'
 import sgMail from '@sendgrid/mail'
+import { promises as fs } from 'fs';
+import path from "path";
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
-export const sendVerifyMail = (email) => {
+
+const htmlTemplatePath = path.join(process.cwd(), 'views/emailTemplate.ejs');
+
+
+export const sendVerifyMail = async (email, token) => {
+    const template = await fs.readFile(htmlTemplatePath, 'utf-8');
+    const html = await ejs.render(template, { email, token });
+    console.log(html)
     const msg = {
         from: "misslisiaa@hotmail.com",
-        to: "misiaczekspotify@gmail.com",
+        to: email,
         subject: "Verify your email",
-        html: "<a href=`http://localhost:3000/user/verify/:verificationToken` >Verify you email</a>",
+        html,
     }
     return sgMail.send(msg)
         .then(() => {

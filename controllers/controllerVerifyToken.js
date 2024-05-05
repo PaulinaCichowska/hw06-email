@@ -1,36 +1,29 @@
-export const verifyToken = async (res, req) => {
-    const { email, password } = req.body
-    const user = await User.findOne({ email })
+import { User } from "#models/userSchema.js"
+export const verifyToken = async (req, res, next) => {
+    const { verificationToken } = req.params
     try {
-        if (!user || !user.validPassword(password)) {
-            return res.status(400).json({
+        const update = {
+            verify: true,
+            verificationToken: null,
+        }
+        const user = await User.findOneAndUpdate(
+            { verificationToken },
+            { $set: update }
+        )
+
+        if (!user) {
+            return res.status(404).json({
                 status: 'error',
-                code: 400,
-                message: 'Incorrect login or password',
-                data: 'Bad request',
+                code: 404,
+                message: 'User not found',
             })
         }
-
-        const payload = {
-            id: user.id,
-            username: user.username,
-        }
-
-        const token = jwt.sign(payload, secret)
-
-        res.json({
-            status: 'success',
+        return res.status(200).json({
+            status: 'OK',
             code: 200,
-            data: {
-                token,
-                user: {
-                    "email": email,
-                    "subscription": "starter"
-                }
-            },
+            message: 'Verification successful',
         })
-    }
-    catch (error) {
-        next(error);
+    } catch (e) {
+        next(e)
     }
 }

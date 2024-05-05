@@ -3,6 +3,7 @@ import gravatar from "gravatar"
 import { v4 as uuidV4 } from "uuid"
 import { sendVerifyMail } from "#config/config-mail.js";
 
+
 export const signUp = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).lean();
@@ -20,7 +21,7 @@ export const signUp = async (req, res, next) => {
         const newUser = new User({ email, avatarURL, verificationToken });
         newUser.setPassword(password);
         await newUser.save();
-        await sendVerifyMail()
+        await sendVerifyMail(email, verificationToken)
         res.status(201).json({
             status: 'success',
             code: 201,
